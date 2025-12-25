@@ -33,17 +33,51 @@
     }
     }
 
-    # Configure the AWS Provider
-    provider "aws" {
-    region = "us-east-1"
+    ################
+    #Variables 
+    ################
+
+    variable "aws_region"{
+        description =   "AWS region to deploy resources into"
+        type =  string
+        default =   "us-east-1"
     }
 
-    # Get default VPC and subnet for simplicity
+    variable "instance_type"{
+        description =   "EC2 instance type"
+        type    =   string
+        default =   "t2.micro" 
+    }
+
+    variable    "ami_id"{
+        description     =   "AMI ID for EC2 Instance"
+        type    =   string
+        default =   "ami-068c0051b15cdb816"
+    }
+
+    variable "bucket_name"{
+        description =   "S3 bucket name"
+        type    =   string
+        default =   "ribesh-adexbootcamp-assignment-1"
+    }
+
+    ##################
+    # Provider
+    ##################
+
+    provider "aws"{
+        region  =   var.aws_region
+    }
+
+    #################
+    # Data Sources
+    #################
+
     data "aws_vpc" "default" {
         default =   true
     }
 
-    # Data Source
+
     data "aws_subnets" "default"{
         filter {
             name = "vpc-id"
@@ -51,9 +85,12 @@
         }
     }
 
+    ###############
     # S3 Bucket
+    ###############
+
     resource "aws_s3_bucket" "my_bucket"{
-        bucket = "ribesh-adexbootcamp-assignment-1"
+        bucket = "ribesh-adexbootcamp-assignment-2"
         tags =  {
             Name    =   "adexbootcamp"
             Environment =   "dev"
@@ -69,11 +106,13 @@
         restrict_public_buckets =   true
     }
 
-
+    ##################
     # EC2 Instance
+    ##################
+
     resource "aws_instance" "my_instance"{
-        ami =   "ami-068c0051b15cdb816" # Amazon Linux 2 ==> us-east-1
-        instance_type = "t2.micro"
+        ami =   var.ami_id
+        instance_type = var.instance_type
         subnet_id   =   data.aws_subnets.default.ids[0]
         associate_public_ip_address =   true
 
@@ -81,6 +120,32 @@
             Name    =   "adexbootcamp"
             Environment =   "dev"
         }
+    }
+
+    #############
+    # Output
+    #############
+
+    output "s3_bucket_name"{
+        description =   "Name of the S3 bucket"
+        value  = aws_s3_bucket.my_bucket.bucket  
+    }
+
+
+    output  "s3_bucket_arn"{
+        description =   "ARN of the S3 Bucket"
+        value   =   aws_s3_bucket.my_bucket.arn
+    }
+
+
+    output  "ec2_intance_id" {
+        description =   "ID of the EC2 intance"
+        value   =   aws_instance.my_instance.id
+    }
+
+    output  "ec2_public_ip" {
+        description =   "Public IP of the EC2 Intance"
+        value   =   aws_instance.my_instance.public_ip
     }
     ```
 
@@ -106,6 +171,7 @@
     
     2025-12-15 20:29:00 cf-templates-z2a2wgp3no8h-us-east-1
     2025-12-25 11:51:33 ribesh-adexbootcamp-assignment-1
+    2025-12-25 17:12:22 ribesh-adexbootcamp-assignment-2
     2025-12-15 19:56:49 ribesh-bootcamp-bucket
     ```
 
@@ -117,6 +183,16 @@
 7.  Destroy
     ```bash
     terraform destroy
+    ```
+
+8.  Output
+    ```bash
+    Outputs:
+
+    ec2_intance_id = "i-0da90dbe9062b39c8"
+    ec2_public_ip = "100.26.231.94"
+    s3_bucket_arn = "arn:aws:s3:::ribesh-adexbootcamp-assignment-2"
+    s3_bucket_name = "ribesh-adexbootcamp-assignment-2"
     ```
 
 ### State management explanation
