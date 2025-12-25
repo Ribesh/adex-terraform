@@ -11,9 +11,7 @@
 
 ## Steps
 
-From an empty directory (with the main.tf above):
-
-1.  Configure AWS Credentials:
+1.  Firstly, Configure AWS Credentials:
     ```bash
     aws configure
     
