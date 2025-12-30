@@ -1,4 +1,4 @@
-# For this task, make a new branch and commit the changes relating to `Variable` and `Outputs` usage on another branch.
+# Introduce `Modules` on your existing Terraform stack with `Variables` and `Outputs`. You might need to create a new branch from the previous branch (not source/main branch)
 
 
 ## Steps
